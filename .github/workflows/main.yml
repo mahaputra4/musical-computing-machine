@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      ROOT_PASS: ${{ secrets.WIN_PASS }}
+      ROOT_PASS: ${{ secrets.ROOT_PASS }}
       ZROK_ENV: ${{ secrets.ZROK_ENV }}
 
     steps:
@@ -24,10 +24,7 @@ jobs:
 
     - name: Configure Remote Desktop and Change Root Password
       run: |
-        sudo mount -o remount,rw /
-        sudo chmod 0640 /etc/shadow
-        sudo passwd -u root
-        echo -e "$ROOT_PASS\n$ROOT_PASS" | sudo passwd root
+        echo "root:$ROOT_PASS" | sudo chpasswd
         sudo systemctl enable xrdp
         sudo systemctl start xrdp
         sudo ufw allow 3389/tcp
