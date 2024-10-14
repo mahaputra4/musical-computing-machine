@@ -14,7 +14,7 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect
+        sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect screen
 
     - name: Download zrok
       run: |
@@ -39,13 +39,18 @@ jobs:
 
     - name: Tunnel Setup with zrok
       run: |
-        # Create an expect script
-        echo '#!/usr/bin/expect -f' > zrok_setup.exp
-        echo "spawn bash -c \"./zrok/zrok enable '$ZROK_ENV' && ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 && sleep 21600\"" >> zrok_setup.exp
-        echo 'expect eof' >> zrok_setup.exp
+        ls
+        pwd
+        export TERM=dumb  # Set TERM to avoid TTY issues
+        screen -L -dm bash -c "./zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1"
+        screen -L -dm bash -c "./zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 > zrok_share.log 2>&1"
 
-        chmod +x zrok_setup.exp  # Make the script executable
-        ./zrok_setup.exp  # Run the expect script
+    - name: Check zrok output
+      run: |
+        sleep 10
+        echo "Output from zrok enable:"
+        cat zrok_enable.log
+        echo "-------------------------------------"
+        echo "Output from zrok share:"
+        cat zrok_share.log
         sleep 21600
-        # bash -c "./zrok/zrok enable '$ZROK_ENV' && ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 && sleep 21600"
-        
