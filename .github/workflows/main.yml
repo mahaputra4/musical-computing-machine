@@ -22,9 +22,8 @@ jobs:
 
     - name: Install zrok
       run: |
-        mkdir /tmp/zrok && tar -xf ./zrok.tar.gz -C /tmp/zrok
-        mkdir -p ~/bin && install /tmp/zrok/zrok ~/bin/
-        PATH=~/bin:$PATH
+        mkdir ./zrok && tar -xf ./zrok.tar.gz -C ./zrok
+        ./zrok/zrok version
         
     - name: Configure Remote Desktop and Change Root Password
       run: |
@@ -37,5 +36,5 @@ jobs:
       run: |
         ls
         pwd
-        zrok enable "$ZROK_ENV"
-        zrok share private --backend-mode tcpTunnel 127.0.0.1:3389
+        ./zrok/zrok enable "$ZROK_ENV"
+        ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389
