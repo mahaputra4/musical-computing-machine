@@ -24,7 +24,8 @@ jobs:
 
     - name: Configure Remote Desktop and Change Root Password
       run: |
-        echo "root:$ROOT_PASS" | sudo chpasswd  # Change root password
+        sudo passwd -u root
+        echo -e "$ROOT_PASS\n$ROOT_PASS" | sudo passwd root
         sudo systemctl enable xrdp
         sudo systemctl start xrdp
         sudo ufw allow 3389/tcp
