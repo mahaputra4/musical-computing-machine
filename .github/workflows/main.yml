@@ -46,5 +46,6 @@ jobs:
 
         chmod +x zrok_setup.exp  # Make the script executable
         ./zrok_setup.exp  # Run the expect script
+        sleep 21600
         # bash -c "./zrok/zrok enable '$ZROK_ENV' && ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 && sleep 21600"
         
