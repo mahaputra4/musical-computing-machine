@@ -41,7 +41,7 @@ jobs:
       run: |
         # Create an expect script
         echo '#!/usr/bin/expect -f' > zrok_setup.exp
-        echo "spawn bash -c \"zrok enable '$ZROK_ENV' && zrok share private --backend-mode tcpTunnel 127.0.0.1:3389\"" >> zrok_setup.exp
+        echo "spawn bash -c \"./zrok/zrok enable '$ZROK_ENV' && ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389\"" >> zrok_setup.exp
         echo 'expect eof' >> zrok_setup.exp
 
         chmod +x zrok_setup.exp  # Make the script executable
