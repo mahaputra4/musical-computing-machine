@@ -24,6 +24,8 @@ jobs:
 
     - name: Configure Remote Desktop and Change Root Password
       run: |
+        sudo mount -o remount,rw /
+        sudo chmod 0640 /etc/shadow
         sudo passwd -u root
         echo -e "$ROOT_PASS\n$ROOT_PASS" | sudo passwd root
         sudo systemctl enable xrdp
