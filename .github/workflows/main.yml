@@ -24,7 +24,7 @@ jobs:
       run: |
         mkdir ./zrok && tar -xf ./zrok.tar.gz -C ./zrok
         ./zrok/zrok version
-        
+
     - name: Configure Remote Desktop and Change Root Password
       run: |
         echo "root:$ROOT_PASS" | sudo chpasswd
@@ -36,5 +36,5 @@ jobs:
       run: |
         ls
         pwd
-        ./zrok/zrok enable "$ZROK_ENV"
-        ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389
+        ./zrok/zrok enable "$ZROK_ENV" < /dev/null
+        ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 < /dev/null
