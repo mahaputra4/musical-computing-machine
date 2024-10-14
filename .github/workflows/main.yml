@@ -14,16 +14,12 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect screen
+        sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect screen ubuntu-desktop
 
     - name: Download zrok
       run: |
         wget https://github.com/openziti/zrok/releases/download/v0.4.24/zrok_0.4.24_linux_amd64.tar.gz -O zrok.tar.gz
-
-    - name: Install zrok
-      run: |
-        mkdir ./zrok && tar -xf ./zrok.tar.gz -C ./zrok
-        ./zrok/zrok version
+        echo "gnome-session" > ~/.xsession
 
     - name: Configure Remote Desktop and Change Root Password
       run: |
@@ -31,6 +27,11 @@ jobs:
         sudo systemctl enable xrdp
         sudo systemctl start xrdp
         sudo ufw allow 3389/tcp
+
+    - name: Install zrok
+      run: |
+        mkdir ./zrok && tar -xf ./zrok.tar.gz -C ./zrok
+        ./zrok/zrok version
 
     - name: Folder Check
       run: |
