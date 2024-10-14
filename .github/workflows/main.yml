@@ -42,8 +42,7 @@ jobs:
         ls
         pwd
         export TERM=dumb  # Set TERM to avoid TTY issues
-        screen -L -dm bash -c "./zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1"
-        screen -L -dm bash -c "./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 > zrok_share.log 2>&1"
+        screen -L -dm bash -c "./zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ./zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:3389 > zrok_share.log 2>&1"
 
     - name: Check zrok output
       run: |
