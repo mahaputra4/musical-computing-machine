@@ -24,8 +24,7 @@ jobs:
       run: |
         mkdir /tmp/zrok && tar -xf ./zrok.tar.gz -C /tmp/zrok
         mkdir -p ~/bin && install /tmp/zrok/zrok ~/bin/
-        echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
-        source ~/.bashrc  # Update the current session
+        PATH=~/bin:$PATH
         
     - name: Configure Remote Desktop and Change Root Password
       run: |
