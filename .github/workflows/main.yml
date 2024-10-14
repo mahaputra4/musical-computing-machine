@@ -16,12 +16,17 @@ jobs:
         sudo apt-get update
         sudo apt-get install -y ffmpeg xrdp curl p7zip-full
 
+    - name: Download zrok
+      run: |
+        wget https://github.com/openziti/zrok/releases/download/v0.4.24/zrok_0.4.24_linux_amd64.tar.gz -O zrok.tar.gz
+
     - name: Install zrok
       run: |
-        curl -sSLfo ./zrok-install.bash https://get.openziti.io/install.bash
-        less ./zrok-install.bash  # Optional: Inspect script for security
-        sudo bash ./zrok-install.bash zrok
-
+        mkdir /tmp/zrok && tar -xf ./zrok.tar.gz -C /tmp/zrok
+        mkdir -p ~/bin && install /tmp/zrok/zrok ~/bin/
+        echo 'export PATH=~/bin:$PATH' >> ~/.bashrc
+        source ~/.bashrc  # Update the current session
+        
     - name: Configure Remote Desktop and Change Root Password
       run: |
         echo "root:$ROOT_PASS" | sudo chpasswd
