@@ -24,7 +24,7 @@ jobs:
 
     - name: VNC Server
       run: |
-        brew install tigervnc
+        brew install tiger-vnc
         vncserver :1
 
     # brew install x11vnc
