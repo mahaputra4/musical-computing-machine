@@ -14,7 +14,7 @@ jobs:
     - name: Set up dependencies
       run: |
         brew update
-        brew install ffmpeg curl p7zip screen tigervnc
+        brew install ffmpeg curl p7zip screen tiger-vnc
 
     - name: Download zrok
       run: |
