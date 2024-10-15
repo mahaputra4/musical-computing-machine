@@ -25,6 +25,7 @@ jobs:
     - name: VNC Server
       run: |
         brew install x11vnc
+        mkdir -p ~/.vnc
         echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
         x11vnc -usepw -display :0 -forever -bg
 
