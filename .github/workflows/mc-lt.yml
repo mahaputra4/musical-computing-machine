@@ -38,7 +38,7 @@ jobs:
         sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         sudo profiles -P
 
-        sudo defaults write /var/db/launchd.db/com.apple.launchd/overrides.plist com.apple.screensharing Disabled -bool false
+        # sudo defaults write /var/db/launchd.db/com.apple.launchd/overrides.plist com.apple.screensharing Disabled -bool false
         
         # sudo defaults write /Library/Preferences/com.apple.RemoteManagement ScreenSharingReqPermEnabled -bool false
         # sudo defaults write /Library/Preferences/com.apple.RemoteManagement AllowScreenSharing -bool true
