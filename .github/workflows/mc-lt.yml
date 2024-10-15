@@ -38,6 +38,9 @@ jobs:
 
         echo "Step 5"
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
+
+        echo "Step 6"
+        tccutil reset All com.apple.systempreferences
         
     - name: Allow Screen Sharing through Firewall
       run: |
@@ -51,6 +54,7 @@ jobs:
 
     - name: Check zrok output
       run: |
+        who
         sleep 10
         echo "Output from zrok enable:"
         cat zrok_enable.log
