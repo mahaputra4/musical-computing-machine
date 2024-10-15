@@ -34,9 +34,9 @@ jobs:
         # echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
         # x11vnc -usepw -display :1 -forever -bg
 
-        echo "Step 0"
-        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
-        sudo profiles -P
+        # echo "Step 0"
+        # sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
+        # sudo profiles -P
 
         # sudo defaults write /var/db/launchd.db/com.apple.launchd/overrides.plist com.apple.screensharing Disabled -bool false
         
@@ -47,18 +47,42 @@ jobs:
         # sudo pkill -f ARDAgent
         # sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
         
-        sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        # sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
         
-        echo "Step 1"
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
+        # echo "Step 1"
+        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
         
-        echo "Step 2"
+        # echo "Step 2"
         # sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db ".schema access"
         # echo "--------------------------------------------------------------------------------------------------------"
-        sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) VALUES ('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, 1, NULL, NULL, 0, 'UNUSED', NULL, 0, CAST(strftime('%s', 'now') AS INTEGER));"
+        # sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) VALUES ('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, 1, NULL, NULL, 0, 'UNUSED', NULL, 0, CAST(strftime('%s', 'now') AS INTEGER));"
         
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
+        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes
+        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
+        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
+        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
+        #disable spotlight indexing
+        sudo mdutil -i off -a
+        
+        #Create new account
+        sudo dscl . -create /Users/vncuser
+        sudo dscl . -create /Users/vncuser UserShell /bin/bash
+        sudo dscl . -create /Users/vncuser RealName "VNC User"
+        sudo dscl . -create /Users/vncuser UniqueID 1001
+        sudo dscl . -create /Users/vncuser PrimaryGroupID 80
+        sudo dscl . -create /Users/vncuser NFSHomeDirectory /Users/vncuser
+        sudo dscl . -passwd /Users/vncuser $ROOT_PASS
+        sudo dscl . -passwd /Users/vncuser $ROOT_PASS
+        sudo createhomedir -c -u vncuser > /dev/null
+        
+        #Enable VNC
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes 
+        
+        #VNC password - http://hints.macworld.com/article.php?story=20071103011608872
+        echo $ROOT_PASS | perl -we 'BEGIN { @k = unpack "C*", pack "H*", "1734516E8BA8C5E2FF1C39567390ADCA"}; $_ = <>; chomp; s/^(.{8}).*/$1/; @p = unpack "C*", $_; foreach (@k) { printf "%02X", $_ ^ (shift @p || 0) }; print "\n"' | sudo tee /Library/Preferences/com.apple.VNCSettings.txt
+        
+        #Start VNC/reset changes
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
         
@@ -82,4 +106,7 @@ jobs:
         echo "-------------------------------------"
         echo "Output from zrok share:"
         cat zrok_share.log
-        sleep 21600
+        # sleep 21600
+        
+    - name: Setup tmate session
+      uses: mxschmitt/action-tmate@v3
