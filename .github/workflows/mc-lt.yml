@@ -23,10 +23,16 @@ jobs:
         mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
         ~/zrok/zrok version
         
-    - name: Allow Screen Sharing through Firewall
+    - name: Setup VNC
       run: |
-        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
-        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
+        git clone https://github.com/LibVNC/macVNC.git
+        cd macVNC
+        mkdir build
+        cd build
+        cmake ..
+        cmake --build .
+        cmake --install .
+        screen -L -dm bash -c "./macVNC.app/Contents/MacOS/macVNC -rfbport 5901 > macVNC.log 2>&1"
 
     - name: Setup Tunnel with zrok
       run: |
@@ -43,7 +49,7 @@ jobs:
         echo "-------------------------------------"
         echo "Output from zrok share:"
         cat zrok_share.log
-        # sleep 21600
+        sleep 21600
         
-    - name: Setup tmate session
-      uses: mxschmitt/action-tmate@v3
+    # - name: Setup tmate session
+    #   uses: mxschmitt/action-tmate@v3
