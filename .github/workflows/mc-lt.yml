@@ -48,7 +48,8 @@ jobs:
         sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db ".schema access"
         echo "--------------------------------------------------------------------------------------------------------"
         sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db \
-        "INSERT INTO access VALUES('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, NULL, NULL, NULL, 'UNUSED', NULL, 0, 1541440109, NULL);"
+        "INSERT INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) 
+        VALUES ('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, 1, NULL, NULL, 0, 'UNUSED', NULL, 0, CAST(strftime('%s', 'now') AS INTEGER));"
 
         # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes 
         
