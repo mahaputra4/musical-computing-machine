@@ -22,12 +22,16 @@ jobs:
         mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
         ~/zrok/zrok version
 
-    - name: Enable VNC and Set Root Password
+    - name: Enable VNC and Set Simple Authentication
       run: |
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
           -activate -configure -access -on -users admin -privs -all \
           -restart -agent -menu
-        echo "root:$ROOT_PASS" | sudo dscl . -passwd /Users/root
+
+        sudo defaults write /Library/Preferences/com.apple.RemoteManagement VNCPassword -data $(echo -n '$ROOT_PASS' | openssl enc -aes-128-cbc -a -k "$ROOT_PASS")
+
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+          -configure -clientopts -setvnclegacy -vnclegacy yes
 
     - name: Allow Screen Sharing through Firewall
       run: |
