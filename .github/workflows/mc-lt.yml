@@ -14,7 +14,7 @@ jobs:
     - name: Set up dependencies
       run: |
         brew update
-        brew install ffmpeg curl p7zip screen tiger-vnc
+        brew install ffmpeg curl p7zip screen
 
     - name: Download zrok
       run: |
@@ -22,16 +22,23 @@ jobs:
         mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
         ~/zrok/zrok version
 
-    - name: Start VNC Server
+    - name: VNC Server
       run: |
-        # Create a VNC password file
-        mkdir -p ~/.vnc
-        echo "$VNC_PASS" | vncpasswd -f > ~/.vnc/passwd
-        chmod 600 ~/.vnc/passwd
+        echo "Step 1"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
         
-        # Start the TigerVNC server
-        vncserver :1 -geometry 1280x800 -depth 24 -localhost
+        echo "Step 2"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes 
+        
+        echo "Step 3"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
 
+        echo "Step 4"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
+
+        echo "Step 5"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
+        
     - name: Allow Screen Sharing through Firewall
       run: |
         sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
