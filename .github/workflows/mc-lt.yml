@@ -1,0 +1,50 @@
+name: Server Workflows (macOS)
+
+on: [workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    env:
+      ROOT_PASS: ${{ secrets.ROOT_PASS }}
+      ZROK_ENV: ${{ secrets.ZROK_ENV }}
+
+    steps:
+    - name: Set up dependencies
+      run: |
+        brew update
+        brew install ffmpeg curl p7zip screen
+
+    - name: Download zrok
+      run: |
+        curl -L https://github.com/openziti/zrok/releases/download/v0.4.41/zrok_0.4.41_darwin_amd64.tar.gz -o zrok.tar.gz
+        mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
+        ~/zrok/zrok version
+
+    - name: Enable VNC and Set Root Password
+      run: |
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+          -activate -configure -access -on -users admin -privs -all \
+          -restart -agent -menu
+        echo "root:$ROOT_PASS" | sudo dscl . -passwd /Users/root
+
+    - name: Allow Screen Sharing through Firewall
+      run: |
+        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --add /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
+        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --unblockapp /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
+
+    - name: Setup Tunnel with zrok
+      run: |
+        export TERM=dumb
+        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5900 > zrok_share.log 2>&1"
+
+    - name: Check zrok output
+      run: |
+        sleep 10
+        echo "Output from zrok enable:"
+        cat zrok_enable.log
+        echo "-------------------------------------"
+        echo "Output from zrok share:"
+        cat zrok_share.log
+        sleep 21600
