@@ -25,6 +25,7 @@ jobs:
     - name: VNC Server
       run: |
         echo "Step 0"
+        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         tccutil reset All com.apple.systempreferences
         sudo chmod +a "everyone allow" /System/Library/CoreServices/RemoteManagement/ARDAgent.app
         sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
