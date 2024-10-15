@@ -38,10 +38,8 @@ jobs:
         sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         sudo profiles -P
         
-        sudo defaults write /Library/Preferences/com.apple.RemoteManagement \
-        ScreenSharingReqPermEnabled -bool false
-        sudo defaults write /Library/Preferences/com.apple.RemoteManagement \
-        AllowScreenSharing -bool true
+        sudo defaults write /Library/Preferences/com.apple.RemoteManagement ScreenSharingReqPermEnabled -bool false
+        sudo defaults write /Library/Preferences/com.apple.RemoteManagement AllowScreenSharing -bool true
         sudo defaults write /Library/Preferences/com.apple.windowserver.plist VirtualDisplayEnabled -bool true
 
         sudo pkill -f ARDAgent
@@ -52,21 +50,13 @@ jobs:
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
         
         echo "Step 2"
-        sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db ".schema access"
-        echo "--------------------------------------------------------------------------------------------------------"
-        sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db \
-        "INSERT INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) 
-        VALUES ('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, 1, NULL, NULL, 0, 'UNUSED', NULL, 0, CAST(strftime('%s', 'now') AS INTEGER));"
+        # sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db ".schema access"
+        # echo "--------------------------------------------------------------------------------------------------------"
+        sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) VALUES ('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, 1, NULL, NULL, 0, 'UNUSED', NULL, 0, CAST(strftime('%s', 'now') AS INTEGER));"
         
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes
-        
-        echo "Step 3"
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
-
-        echo "Step 4"
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
-
-        echo "Step 5"
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
         
     - name: Allow Screen Sharing through Firewall
