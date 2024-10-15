@@ -14,8 +14,7 @@ jobs:
     - name: Set up dependencies
       run: |
         brew update
-        # brew install ffmpeg curl p7zip screen
-        brew install screen
+        brew install screen libvncserver
 
     - name: Download zrok
       run: |
