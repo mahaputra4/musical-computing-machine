@@ -24,15 +24,18 @@ jobs:
 
     - name: VNC Server
       run: |
-        brew install tiger-vnc
-        brew list
-        vncserver :1
+        brew install --cask xquartz
+        open -a XQuartz &
+        X :1 &
 
-    # brew install x11vnc
-    # mkdir -p ~/.vnc
-    # echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
-    # x11vnc -usepw -display :0 -forever -bg
+        brew install x11vnc
+        mkdir -p ~/.vnc
+        echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
+        x11vnc -usepw -display :1 -forever -bg
 
+    # brew install tiger-vnc
+    # brew list
+    # vncserver :1
     #     echo "Step 0"
     #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
     #     tccutil reset All com.apple.systempreferences
