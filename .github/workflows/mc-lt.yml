@@ -22,18 +22,24 @@ jobs:
         mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
         ~/zrok/zrok version
 
-    - name: Enable VNC and Set Simple Authentication
+    - name: Enable VNC and Adjust Permissions
       run: |
-        # Enable remote management
+        # Activate Remote Management
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
           -activate -configure -access -on -users admin -privs -all \
           -restart -agent -menu
 
-        VNC_PASSWORD=$(echo -n '$ROOT_PASS' | base64)
-        sudo defaults write /Library/Preferences/com.apple.RemoteManagement.plist VNCPassword -data "$VNC_PASSWORD"
+        osascript -e 'tell application "System Events" to set auth to do shell script "sudo tccutil reset ScreenCapture" with administrator privileges'
+
+        VNC_PASSWORD=$(echo -n "$ROOT_PASS" | base64)
+        sudo defaults write /Library/Preferences/com.apple.RemoteManagement VNCPassword -data "$VNC_PASSWORD"
 
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
           -configure -clientopts -setvnclegacy -vnclegacy yes
+
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
+          -restart -agent
+
 
     - name: Allow Screen Sharing through Firewall
       run: |
