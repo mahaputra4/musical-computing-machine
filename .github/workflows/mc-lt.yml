@@ -24,11 +24,13 @@ jobs:
 
     - name: Enable VNC and Set Simple Authentication
       run: |
+        # Enable remote management
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
           -activate -configure -access -on -users admin -privs -all \
           -restart -agent -menu
 
-        sudo defaults write /Library/Preferences/com.apple.RemoteManagement VNCPassword -data $(echo -n '$ROOT_PASS' | openssl enc -aes-128-cbc -a -k "$ROOT_PASS")
+        VNC_PASSWORD=$(echo -n '$ROOT_PASS' | base64)
+        sudo defaults write /Library/Preferences/com.apple.RemoteManagement.plist VNCPassword -data "$VNC_PASSWORD"
 
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart \
           -configure -clientopts -setvnclegacy -vnclegacy yes
