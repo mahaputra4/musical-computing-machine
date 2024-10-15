@@ -13,6 +13,7 @@ jobs:
     steps:
     - name: Set up dependencies
       run: |
+        sudo dscl . -passwd /Users/runner $ROOT_PASS
         brew update
         # brew install ffmpeg curl p7zip screen
         brew install screen
@@ -37,13 +38,16 @@ jobs:
         echo "Step 0"
         sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         sudo profiles -P
-        
-        sudo defaults write /Library/Preferences/com.apple.RemoteManagement ScreenSharingReqPermEnabled -bool false
-        sudo defaults write /Library/Preferences/com.apple.RemoteManagement AllowScreenSharing -bool true
-        sudo defaults write /Library/Preferences/com.apple.windowserver.plist VirtualDisplayEnabled -bool true
 
-        sudo pkill -f ARDAgent
-        sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        sudo defaults write /var/db/launchd.db/com.apple.launchd/overrides.plist com.apple.screensharing Disabled -bool false
+        
+        # sudo defaults write /Library/Preferences/com.apple.RemoteManagement ScreenSharingReqPermEnabled -bool false
+        # sudo defaults write /Library/Preferences/com.apple.RemoteManagement AllowScreenSharing -bool true
+        # sudo defaults write /Library/Preferences/com.apple.windowserver.plist VirtualDisplayEnabled -bool true
+
+        # sudo pkill -f ARDAgent
+        # sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        
         sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
         
         echo "Step 1"
@@ -68,7 +72,7 @@ jobs:
       run: |
         who
         export TERM=dumb
-        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5901 > zrok_share.log 2>&1"
+        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5900 > zrok_share.log 2>&1"
 
     - name: Check zrok output
       run: |
