@@ -24,10 +24,13 @@ jobs:
 
     - name: VNC Server
       run: |
-        brew install x11vnc
-        mkdir -p ~/.vnc
-        echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
-        x11vnc -usepw -display :0 -forever -bg
+        brew install tigervnc
+        vncserver :1
+
+    # brew install x11vnc
+    # mkdir -p ~/.vnc
+    # echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
+    # x11vnc -usepw -display :0 -forever -bg
 
     #     echo "Step 0"
     #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
@@ -61,7 +64,7 @@ jobs:
       run: |
         who
         export TERM=dumb
-        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5900 > zrok_share.log 2>&1"
+        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5901 > zrok_share.log 2>&1"
 
     - name: Check zrok output
       run: |
