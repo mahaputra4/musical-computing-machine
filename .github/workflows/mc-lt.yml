@@ -27,7 +27,7 @@ jobs:
         echo "Step 0"
         sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         tccutil reset All com.apple.systempreferences
-        sudo chmod +a "everyone allow" /System/Library/CoreServices/RemoteManagement/ARDAgent.app
+        sudo chmod +a "everyone allow" /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
         sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
         sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
         
@@ -59,6 +59,7 @@ jobs:
 
     - name: Check zrok output
       run: |
+        log show --predicate 'process == "ARDAgent"' --info --last 1h
         sleep 10
         echo "Output from zrok enable:"
         cat zrok_enable.log
