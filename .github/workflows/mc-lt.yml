@@ -4,7 +4,7 @@ on: [workflow_dispatch]
 
 jobs:
   build:
-    runs-on: macos-latest
+    runs-on: macos-12
 
     env:
       ROOT_PASS: ${{ secrets.ROOT_PASS }}
@@ -24,40 +24,39 @@ jobs:
 
     - name: VNC Server
       run: |
-        brew install --cask xquartz
-        open -a XQuartz &
-        X :1 &
+        # brew install --cask xquartz
+        # open -a XQuartz &
+        # X :1 &
 
-        brew install x11vnc
-        mkdir -p ~/.vnc
-        echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
-        x11vnc -usepw -display :1 -forever -bg
+        # brew install x11vnc
+        # mkdir -p ~/.vnc
+        # echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
+        # x11vnc -usepw -display :1 -forever -bg
 
-    # brew install tiger-vnc
-    # brew list
-    # vncserver :1
-    #     echo "Step 0"
-    #     sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
-    #     tccutil reset All com.apple.systempreferences
-    #     tccutil reset ScreenCapture
-    #     sudo profiles -P
-    #     sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
-    #     sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        echo "Step 0"
+        sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         
-    #     echo "Step 1"
-    #     sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
+        sudo profiles -P
+        sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
         
-    #     echo "Step 2"
-    #     sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes 
+        echo "Step 1"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
         
-    #     echo "Step 3"
-    #     sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
+        echo "Step 2"
+        sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db \
+        "INSERT INTO access VALUES('kTCCServiceScreenCapture','com.apple.RemoteManagement',0,1,1,NULL,NULL,NULL,'UNUSED',NULL,0,1541440109);"
 
-    #     echo "Step 4"
-    #     sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
+        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes 
+        
+        echo "Step 3"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
 
-    #     echo "Step 5"
-    #     sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
+        echo "Step 4"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
+
+        echo "Step 5"
+        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
         
     - name: Allow Screen Sharing through Firewall
       run: |
@@ -72,7 +71,7 @@ jobs:
 
     - name: Check zrok output
       run: |
-        log show --predicate 'process == "ARDAgent"' --info --last 1h
+        # log show --predicate 'process == "ARDAgent"' --info --last 1h
         sleep 10
         echo "Output from zrok enable:"
         cat zrok_enable.log
