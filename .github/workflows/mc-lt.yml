@@ -24,6 +24,12 @@ jobs:
 
     - name: VNC Server
       run: |
+        echo "Step 0"
+        tccutil reset All com.apple.systempreferences
+        sudo chmod +a "everyone allow" /System/Library/CoreServices/RemoteManagement/ARDAgent.app
+        sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
+        
         echo "Step 1"
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
         
@@ -38,9 +44,6 @@ jobs:
 
         echo "Step 5"
         sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
-
-        echo "Step 6"
-        tccutil reset All com.apple.systempreferences
         
     - name: Allow Screen Sharing through Firewall
       run: |
@@ -49,12 +52,12 @@ jobs:
 
     - name: Setup Tunnel with zrok
       run: |
+        who
         export TERM=dumb
         screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5900 > zrok_share.log 2>&1"
 
     - name: Check zrok output
       run: |
-        who
         sleep 10
         echo "Output from zrok enable:"
         cat zrok_enable.log
