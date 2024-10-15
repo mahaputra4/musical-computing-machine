@@ -13,7 +13,6 @@ jobs:
     steps:
     - name: Set up dependencies
       run: |
-        sudo dscl . -passwd /Users/runner $ROOT_PASS
         brew update
         # brew install ffmpeg curl p7zip screen
         brew install screen
