@@ -27,7 +27,8 @@ jobs:
         echo "Step 0"
         sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
         tccutil reset All com.apple.systempreferences
-        sudo chmod +a "everyone allow" /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/MacOS/ARDAgent
+        tccutil reset ScreenCapture
+        sudo profiles -P
         sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
         sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
         
