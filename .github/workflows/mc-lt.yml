@@ -22,69 +22,6 @@ jobs:
         curl -L https://github.com/openziti/zrok/releases/download/v0.4.41/zrok_0.4.41_darwin_amd64.tar.gz -o zrok.tar.gz
         mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
         ~/zrok/zrok version
-
-    - name: VNC Server
-      run: |
-        # brew install --cask xquartz
-        # open -a XQuartz &
-        # X :1 &
-
-        # brew install x11vnc
-        # mkdir -p ~/.vnc
-        # echo "$ROOT_PASS" | x11vnc -storepasswd -f ~/.vnc/passwd
-        # x11vnc -usepw -display :1 -forever -bg
-
-        # echo "Step 0"
-        # sudo /usr/libexec/ApplicationFirewall/socketfilterfw --setglobalstate off
-        # sudo profiles -P
-
-        # sudo defaults write /var/db/launchd.db/com.apple.launchd/overrides.plist com.apple.screensharing Disabled -bool false
-        
-        # sudo defaults write /Library/Preferences/com.apple.RemoteManagement ScreenSharingReqPermEnabled -bool false
-        # sudo defaults write /Library/Preferences/com.apple.RemoteManagement AllowScreenSharing -bool true
-        # sudo defaults write /Library/Preferences/com.apple.windowserver.plist VirtualDisplayEnabled -bool true
-
-        # sudo pkill -f ARDAgent
-        # sudo launchctl unload /System/Library/LaunchDaemons/com.apple.screensharing.plist
-        
-        # sudo launchctl load /System/Library/LaunchDaemons/com.apple.screensharing.plist
-        
-        # echo "Step 1"
-        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
-        
-        # echo "Step 2"
-        # sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db ".schema access"
-        # echo "--------------------------------------------------------------------------------------------------------"
-        # sudo sqlite3 /Library/Application\ Support/com.apple.TCC/TCC.db "INSERT INTO access (service, client, client_type, auth_value, auth_reason, auth_version, csreq, policy_id, indirect_object_identifier_type, indirect_object_identifier, indirect_object_code_identity, flags, last_modified) VALUES ('kTCCServiceScreenCapture', 'com.apple.RemoteManagement', 0, 1, 1, 1, NULL, NULL, 0, 'UNUSED', NULL, 0, CAST(strftime('%s', 'now') AS INTEGER));"
-        
-        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes
-        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvncpw -vncpw $ROOT_PASS
-        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
-        # sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
-        #disable spotlight indexing
-        sudo mdutil -i off -a
-        
-        #Create new account
-        sudo dscl . -create /Users/vncuser
-        sudo dscl . -create /Users/vncuser UserShell /bin/bash
-        sudo dscl . -create /Users/vncuser RealName "VNC User"
-        sudo dscl . -create /Users/vncuser UniqueID 1001
-        sudo dscl . -create /Users/vncuser PrimaryGroupID 80
-        sudo dscl . -create /Users/vncuser NFSHomeDirectory /Users/vncuser
-        sudo dscl . -passwd /Users/vncuser $ROOT_PASS
-        sudo dscl . -passwd /Users/vncuser $ROOT_PASS
-        sudo createhomedir -c -u vncuser > /dev/null
-        
-        #Enable VNC
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -allowAccessFor -allUsers -privs -all
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -configure -clientopts -setvnclegacy -vnclegacy yes 
-        
-        #VNC password - http://hints.macworld.com/article.php?story=20071103011608872
-        echo $ROOT_PASS | perl -we 'BEGIN { @k = unpack "C*", pack "H*", "1734516E8BA8C5E2FF1C39567390ADCA"}; $_ = <>; chomp; s/^(.{8}).*/$1/; @p = unpack "C*", $_; foreach (@k) { printf "%02X", $_ ^ (shift @p || 0) }; print "\n"' | sudo tee /Library/Preferences/com.apple.VNCSettings.txt
-        
-        #Start VNC/reset changes
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -restart -agent -console
-        sudo /System/Library/CoreServices/RemoteManagement/ARDAgent.app/Contents/Resources/kickstart -activate
         
     - name: Allow Screen Sharing through Firewall
       run: |
@@ -95,7 +32,7 @@ jobs:
       run: |
         who
         export TERM=dumb
-        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5900 > zrok_share.log 2>&1"
+        screen -L -dm bash -c "~/zrok/zrok enable '$ZROK_ENV' > zrok_enable.log 2>&1 && ~/zrok/zrok share private --backend-mode tcpTunnel 127.0.0.1:5901 > zrok_share.log 2>&1"
 
     - name: Check zrok output
       run: |
