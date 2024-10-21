@@ -31,7 +31,7 @@ jobs:
         sudo apt install -y arc-theme papirus-icon-theme
         
         # Install essential applications
-        sudo apt install -y gnome-terminal hyfetch htop
+        sudo apt install -y gnome-terminal htop
         
         # Set LightDM as the default display manager (if prompted, select lightdm)
         sudo dpkg-reconfigure lightdm
