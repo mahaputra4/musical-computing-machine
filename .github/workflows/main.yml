@@ -36,6 +36,9 @@ jobs:
         # Set LightDM as the default display manager (if prompted, select lightdm)
         sudo dpkg-reconfigure lightdm
         
+        # Register xfce4-terminal as an alternative for x-terminal-emulator
+        sudo update-alternatives --install /usr/bin/x-terminal-emulator x-terminal-emulator /usr/bin/xfce4-terminal 50
+        
         # Configure the default terminal
         sudo update-alternatives --set x-terminal-emulator /usr/bin/xfce4-terminal
         
