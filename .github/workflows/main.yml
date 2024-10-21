@@ -15,6 +15,8 @@ jobs:
       run: |
         sudo apt-get update
         sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect screen ubuntu-desktop
+        sudo apt install gdm3
+        sudo dpkg-reconfigure gdm3
 
     - name: Download zrok
       run: |
@@ -47,6 +49,12 @@ jobs:
 
     - name: Check zrok output
       run: |
+        sleep 10
+        echo "Output from zrok enable:"
+        cat zrok_enable.log
+        echo "-------------------------------------"
+        echo "Output from zrok share:"
+        cat zrok_share.log
         sleep 10
         echo "Output from zrok enable:"
         cat zrok_enable.log
