@@ -14,14 +14,60 @@ jobs:
     - name: Set up dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect screen ubuntu-desktop
-        sudo apt install gdm3
-        sudo dpkg-reconfigure gdm3
+        sudo apt-get install -y ffmpeg xrdp curl p7zip-full expect screen
+        # sudo apt install gdm3 ubuntu-desktop
+        # sudo dpkg-reconfigure gdm3
+        # echo "gnome-session" > ~/.xsession
 
-    - name: Download zrok
+    - name: Setup DE
       run: |
-        wget https://github.com/openziti/zrok/releases/download/v0.4.24/zrok_0.4.24_linux_amd64.tar.gz -O zrok.tar.gz
-        echo "gnome-session" > ~/.xsession
+        # Install XFCE desktop environment
+        sudo apt install -y xfce4 xfce4-goodies
+        
+        # Install additional packages for aesthetics
+        sudo apt install -y xfce4-terminal lightdm greeter-settings
+        
+        # Install themes and icons
+        sudo apt install -y arc-theme papirus-icon-theme
+        
+        # Install essential applications
+        sudo apt install -y gnome-terminal hyfetch htop
+        
+        # Set LightDM as the default display manager (if prompted, select lightdm)
+        sudo dpkg-reconfigure lightdm
+        
+        # Configure the default terminal
+        sudo update-alternatives --set x-terminal-emulator /usr/bin/xfce4-terminal
+        
+        # Create a .xsession file to start XFCE session
+        echo "startxfce4" > ~/.xsession
+        
+        # Install and configure conky for system information on the desktop
+        sudo apt install -y conky-all
+        
+        # Create a simple conky configuration
+        cat <<EOL > ~/.conkyrc
+        conky.config = {
+            update_interval = 1,
+            total_run_times = 0,
+            own_window = true,
+            own_window_type = 'desktop',
+            own_window_transparent = true,
+            own_window_title = 'Conky',
+            alignment = 'top_right',
+            gap_x = 20,
+            gap_y = 20,
+            font = 'Ubuntu Mono:size=10',
+            double_buffer = true,
+        };
+        
+        conky.text = [[
+        ${color grey}OS: ${color white}$alignr${kernel}
+        ${color grey}Uptime: ${color white}$alignr${uptime}
+        ${color grey}CPU: ${color white}$alignr${cpu}%
+        ${color grey}RAM: ${color white}$alignr${mem} / ${memmax}
+        ]];
+        EOL
 
     - name: Configure Remote Desktop and Change Root Password
       run: |
@@ -32,13 +78,9 @@ jobs:
 
     - name: Install zrok
       run: |
+        wget https://github.com/openziti/zrok/releases/download/v0.4.42/zrok_0.4.42_linux_amd64.tar.gz -O zrok.tar.gz
         mkdir ./zrok && tar -xf ./zrok.tar.gz -C ./zrok
         ./zrok/zrok version
-
-    - name: Folder Check
-      run: |
-        ls
-        pwd
 
     - name: Tunnel Setup with zrok
       run: |
