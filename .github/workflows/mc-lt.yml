@@ -22,6 +22,12 @@ jobs:
         mkdir -p ~/zrok && tar -xf zrok.tar.gz -C ~/zrok
         ~/zrok/zrok version
         
+    - name: Compile ScreenInit
+      run: gcc -framework CoreGraphics -o screen_init screen_init.c
+
+    - name: Run ScreenInit to Change Resolution
+      run: ./screen_init
+      
     - name: Setup VNC
       run: |
         git clone https://github.com/LibVNC/macVNC.git
